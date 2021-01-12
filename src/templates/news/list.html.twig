@@ -1,0 +1,55 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}
+    {% if page.totalEnteries %}{% endif %}
+{% endblock title%}
+
+{% block content %}
+    <hr>
+    {% if page.totalEnteries == 0 %}
+        <h2 class="text-muted">{% trans %}Empty category, see subcategories.{% endtrans %}</h2>
+    {% else %}
+        {% for newsEntry in page.enteries %}
+            <h2>{{ newsEntry.title}}</h2>
+            <div>
+                <p>{{ newsEntry.preview|raw|nl2br }}</p>
+                <a href="{{ url('news_show', { slug: newsEntry.slug }) }}" class="float-right">{% trans %}More...{% endtrans %}</a>
+            </div>
+            <div class="clearfix"></div>
+            <hr>
+        {% endfor %}
+
+        {% if page.totalPages > 1 %}
+            <nav>
+                {% embed 'pagination.html.twig' %}
+                    {% set currentPage = page.currentPage %}
+                    {% set totalPages = page.totalPages %}
+                    {% set routeName = queryParams.category ? 'news_category_list' : 'news_list' %}
+                {% endembed %}
+            </nav>
+        {% endif %}
+    {% endif %}
+{% endblock content %}
+
+{% block sidebar %}
+    <div>
+        {% trans %}Enteries per page:{%  endtrans %}<br/>
+        {% for enteriesLimit in [3, 15] %}
+        <a href="{{ path(queryParams.category ? 'news_category_list' : 'news_list', queryParams|merge({ enteriesLimit: enteriesLimit })) }}"
+           class="{% if queryParams.enteriesLimit == enteriesLimit %}text-success{% endif %}">
+            {{ enteriesLimit }}
+        </a>&nbsp;
+        {% endfor %}
+    </div>
+    <div>
+        Sort direction:
+        {% if queryParams.sortDirection == 'DESC'%}
+            <a href="{{ path('news_list', queryParams|merge({ sortDirection: 'ASC' })) }}">{% trans %}ASC{% endtrans %}</a>
+        {% else %}
+            <a href="{{ path('news_list', queryParams|merge({ sortDirection: 'DESC' })) }}">{% trans %}DESC{% endtrans %}</a>
+        {% endif %}
+    </div>
+    <hr>
+
+    {{ parent(sidebar) }}
+{% endblock sidebar %}

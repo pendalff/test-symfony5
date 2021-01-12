@@ -1,0 +1,19 @@
+{% macro elements(categories, currentCategoryId, queryParams) %}
+    {% for category in categories %}
+        {% set queryParams = queryParams|merge({ category: category.id }) %}
+        <li class="nav-item">
+            <a class="nav-link
+               {% if currentCategoryId == category.id %}active{% endif %}"
+               href="{{ path('news_category_list', queryParams) }}"
+            >
+                {{ category.name }}
+            </a>
+
+            {% if category.childrens %}
+                <ul class="nav flex-column nav-pills ml-3">
+                    {{ _self.elements(category.childrens, currentCategoryId, queryParams) }}
+                </ul>
+            {% endif %}
+        </li>
+    {% endfor %}
+{% endmacro %}

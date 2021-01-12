@@ -1,0 +1,100 @@
+version: '3'
+
+services:
+  database:
+    restart: always
+    container_name: mysql
+    build:
+      context: ./docker/database
+    environment:
+      - MYSQL_DATABASE=${DATABASE_NAME}
+      - MYSQL_USER=${DATABASE_USER}
+      - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
+    ports:
+      - 3310:3306
+    networks:
+      - symfony-test-network
+    volumes:
+      - ./docker/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./docker/database/data:/var/lib/mysql
+      - ./logs/mysql:/var/log
+
+  php-fpm:
+    restart: always
+    container_name: php-fpm
+    build:
+      context: ./docker/php-fpm
+    depends_on:
+      - database
+      - rabbitmq
+    environment:
+      - APP_ENV=${APP_ENV}
+      - APP_SECRET=${APP_SECRET}
+      - DATABASE_URL=mysql://${DATABASE_USER}:${DATABASE_PASSWORD}@mysql:3306/${DATABASE_NAME}?serverVersion=5.7
+      - MESSENGER_TRANSPORT_DSN=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672/%2f/messages
+    networks:
+      - symfony-test-network
+    volumes:
+      - ./src:/var/www
+      - ./logs/php-fpm:/var/log
+
+  php-cli:
+    restart: always
+    container_name: php-cli
+    build:
+      context: ./docker/php-cli
+    depends_on:
+      - database
+      - rabbitmq
+    environment:
+      - APP_ENV=${APP_ENV}
+      - APP_SECRET=${APP_SECRET}
+      - DATABASE_URL=mysql://${DATABASE_USER}:${DATABASE_PASSWORD}@mysql:3306/${DATABASE_NAME}?serverVersion=5.7
+      - MESSENGER_TRANSPORT_DSN=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672/%2f/messages
+    networks:
+      - symfony-test-network
+    volumes:
+      - ./src:/var/www
+      - ./logs/php-cli:/var/log
+    ports:
+      - 9001:9001
+
+  rabbitmq:
+    restart: always
+    container_name: rabbitmq
+    image: rabbitmq:3-management-alpine
+    networks:
+      - symfony-test-network
+    volumes:
+      - ./docker/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./logs/rabbitmq:/var/log
+    environment:
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  nginx:
+    restart: always
+    container_name: nginx
+    build:
+      context: ./docker/nginx
+    networks:
+      - symfony-test-network
+    volumes:
+      - ./src:/var/www
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/sites/:/etc/nginx/sites-available
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d
+      - ./logs/nginx:/var/log
+    depends_on:
+      - php-fpm
+    ports:
+      - 8877:80
+      - 4433:443
+
+networks:
+  symfony-test-network:

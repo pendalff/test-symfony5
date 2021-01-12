@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% import 'menu.html.twig' as menu %}
+
+{% set queryParams = {
+    enteriesLimit: app.request.query.get('enteriesLimit'),
+    sortDirection: app.request.query.get('sortDirection'),
+    category: categoryId??null,
+} %}
+
+{% block body %}
+    <header class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar">
+        <div class="container">
+            <h1 class="display-2 font-italic font-bold position-relative">
+                 TestNews <a href="{{ path('news_list') }}" class="stretched-link"></a>
+            </h1>
+            <p class="font-italic">{% trans %}Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...{% endtrans %}</p>
+        </div>
+    </header>
+    <div class="container">
+        <div class="row">
+            <div class="col-md">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                        <strong>{{ message }}</strong>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            {% block content %}{% endblock content %}
+            </div>
+            <nav class="col-4" style="overflow: auto;">
+            {% block sidebar %}
+                <ul class="nav flex-column nav-pills">
+                    {{ menu.elements(getCategories(), categoryId??null, queryParams) }}
+                </ul>
+            {% endblock sidebar %}
+            </nav>
+        </div>
+    </div>
+{% endblock body %}

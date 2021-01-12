@@ -1,0 +1,50 @@
+easy_admin:
+    site_name: TestNews Site Admin
+    show:
+       max_results: 10
+    entities:
+        Category:
+            class: App\Entity\Category
+            list:
+                fields: [ 'id', 'parent', 'name' ]
+                sort: [ 'id', 'ASC' ]
+                filters: [ 'parent' ]
+            edit:
+                fields:
+                  - 'parent'
+                  - 'name'
+            new:
+              fields:
+                  - 'parent'
+                  - 'name'
+        News:
+            class: App\Entity\News
+            list:
+                fields:
+                    - 'id'
+                    - 'category'
+                    - { property: 'createdAt', type: 'datetime'}
+                    - { property: 'updatedAt', type: 'datetime'}
+                    - 'state'
+                    - 'title'
+            edit:
+                fields:
+                    - 'category'
+                    - { property: 'state', type: 'checkbox'}
+                    - 'title'
+                    - { property: 'preview', type: 'text_editor'}
+                    - { property: 'content', type: 'text_editor'}
+            new:
+                fields:
+                    - 'category'
+                    - { property: 'state', type: 'checkbox' }
+                    - 'title'
+                    - { property: 'preview', type: 'text_editor' }
+                    - { property: 'content', type: 'text_editor' }
+        Comment:
+            class: App\Entity\Comment
+            list:
+                fields:
+                    - 'id'
+                    - 'news'
+                    - 'text'

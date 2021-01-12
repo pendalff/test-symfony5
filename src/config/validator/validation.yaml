@@ -1,0 +1,11 @@
+App\Message\CreateNewsComment:
+  properties:
+    newsId:
+      - NotBlank: ~
+    text:
+      - NotBlank: ~
+      - Length:
+          min: 5
+          max: 500
+          minMessage: 'Text must be at least {{ limit }} characters long'
+          maxMessage: 'Text cannot be longer than {{ limit }} characters'

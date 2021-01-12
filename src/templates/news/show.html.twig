@@ -1,0 +1,33 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}{{ newsEntity.title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ newsEntity.title }}</h1>
+    <hr>
+    {% if newsEntity.image is not empty %}
+        <img src="{{ newsEntity.image }}" class="img-fluid rounded" alt="{{ newsEntity.title }}">
+        <br class="clearfix">
+        <hr>
+    {% endif %}
+    <div>{{ newsEntity.content|raw }}</div>
+    <div class="float-left">Добавлено: {{ newsEntity.createdAt|date('d M Y H:i:s') }}</div>
+    <div class="float-right">Отредактировано: {{ newsEntity.updatedAt|date('d M Y H:i:s') }}</div>
+    <div class="clearfix"></div>
+    <hr>
+
+    {{ form(commentForm) }}
+
+    <hr>
+    {% if newsEntity.comments is empty %}
+        <p>No comments here</p>
+    {% else %}
+        {% for comment in newsEntity.comments %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <p class="card-text">{{ comment.text }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock content %}
