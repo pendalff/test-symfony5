@@ -43,11 +43,12 @@ cd test-symfony5
 
 test-symfony5$ docker-compose build
 
-test-symfony5$ docker-compose run php-cli /var/www/bin/console doctrine:migrations:migrate -n
+test-symfony5$ docker-compose up -d 
 
-test-symfony5$ docker-compose run php-cli /var/www/bin/console doctrine:fixtures:load -n
+test-symfony5$ docker-compose exec php-cli /var/www/bin/console doctrine:migrations:migrate -n
 
-test-symfony5$ docker-compose up -d
+test-symfony5$ docker-compose exec php-cli /var/www/bin/console doctrine:fixtures:load -n
+
 ```
 
 ### Новостной сайт-визитка
@@ -62,6 +63,6 @@ test-symfony5$ docker-compose up -d
 
 Запустить команду
 ```
-test-symfony5$ docker-compose run php-cli /var/www/bin/console app:parse 
+test-symfony5$ docker-compose exec php-cli /var/www/bin/console app:parse 
 ```
-Секунд через 10 посмотреть [http://localhost:8877/category/1?enteriesLimit=15](http://localhost:8877/category/1?enteriesLimit=15)
+Секунд через 10-15 посмотреть [http://localhost:8877/category/1?enteriesLimit=15](http://localhost:8877/category/1?enteriesLimit=15)
