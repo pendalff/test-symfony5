@@ -34,17 +34,10 @@ class NewsController extends AbstractController
      */
     public function listAction(int $page = 1, ?int $category = null, Request $request)
     {
-//        $limit = $request->query->getInt('itemsPerPage', 3);
-//
-//        $sortDirections = ['ASC', 'DESC'];
-//        $sort = $request->query->getAlpha('sortDirection', $sortDirections[0]);
-//        if (!in_array($sort, $sortDirections)) {
-//            $sort = $sortDirections[1];
-//        }
 
         $pageTemplate = Page::factory([
             'currentPage'     => $page,
-            'enteriesLimit' => $request->query->getInt('enteriesLimit', 3),
+            'enteriesLimit'   => $request->query->getInt('enteriesLimit', 3),
             'sortDirection'   => $request->query->getAlpha('sortDirection'),
             'sortField'       => 'createdAt',
         ]);

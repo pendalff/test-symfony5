@@ -18,4 +18,21 @@ class CategoryRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Category::class);
     }
+
+    /**
+     * @return array<string,mixed>
+     */
+    public function getTreeArray(): array
+    {
+        $categories = [];
+
+        $rootCategories = $this->findBy(['parent' => null]);
+        foreach ($rootCategories as $rootCategory) {
+            if ($rootCategory->hasNotEmptyChildrensOrHasActiveNews()) {
+                $categories[] = $rootCategory->toTreeArray();
+            }
+        }
+
+        return $categories;
+    }
 }

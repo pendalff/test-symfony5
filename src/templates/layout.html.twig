@@ -3,9 +3,9 @@
 {% import 'menu.html.twig' as menu %}
 
 {% set queryParams = {
-    enteriesLimit: app.request.query.get('enteriesLimit'),
-    sortDirection: app.request.query.get('sortDirection'),
-    category: categoryId??null,
+    enteriesLimit: page.enteriesLimit,
+    sortDirection: page.sortDirection,
+    category: categoryId ?? null
 } %}
 
 {% block body %}
@@ -35,7 +35,7 @@
             <nav class="col-4" style="overflow: auto;">
             {% block sidebar %}
                 <ul class="nav flex-column nav-pills">
-                    {{ menu.elements(getCategories(), categoryId??null, queryParams) }}
+                    {{ menu.elements(getCategories(), categoryId ?? null, queryParams) }}
                 </ul>
             {% endblock sidebar %}
             </nav>

@@ -9,7 +9,7 @@ trait PageSort
 
     private $sortDirections = ['ASC', 'DESC'];
 
-    protected ?string $sortDirection;
+    protected string $sortDirection = 'DESC';
 
     protected ?string $sortField;
 

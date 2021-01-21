@@ -11,6 +11,8 @@ use Twig\TwigFunction;
 
 class AppExtension extends AbstractExtension
 {
+    public const MENU_ITEMS_CACHE_KEY = 'menuCategoriesTree';
+
     private CacheInterface $cache;
     private CategoryRepository $categoryRepository;
 
@@ -30,21 +32,17 @@ class AppExtension extends AbstractExtension
         ];
     }
 
-    public function getCategories()
+    public function getCategories(): array
     {
-        return $this->cache->get('menuCategoriesTree', function (ItemInterface $item) {
+        return $this->cache->get(self::MENU_ITEMS_CACHE_KEY, function (ItemInterface $item) {
             $item->expiresAfter(30);
 
-            $categories = [];
-
-            $rootCategories = $this->categoryRepository->findBy(['parent' => null]);
-            foreach ($rootCategories as $rootCategory) {
-                if ($rootCategory->hasNotEmptyChildrensOrHasActiveNews()) {
-                    $categories[] = $rootCategory->toTreeArray();
-                }
-            }
-
-            return $categories;
+            return $this->categoryRepository->getTreeArray();
         });
+    }
+
+    public function clearCategoriesCache(): bool
+    {
+        return $this->cache->delete(self::MENU_ITEMS_CACHE_KEY);
     }
 }
